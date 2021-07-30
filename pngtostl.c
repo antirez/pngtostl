@@ -28,6 +28,7 @@
 #include <string.h>
 #define PNG_DEBUG 3
 #include <png.h>
+#include <math.h>
 
 /* Global parameters set via command line options. */
 int OptNegative = 1;
@@ -206,7 +207,8 @@ void pngtostl(const char *filename) {
     for (int y = 0; y < h; y++) {
         for (int x = 0; x < w; x++) {
             float lum = (float)(p[0]+p[1]+p[2])/3;
-            int level = (OptLevels-1)*lum/max;
+            int level = round((OptLevels-1)*lum/max);
+            if (OptNegative) level = OptLevels-level-1;
             float height = OptBaseHeight+(OptReliefHeight*level/OptLevels);
             boxToTriangles(x,y,1,1,height);
             p += 3;
@@ -226,38 +228,46 @@ void showHelp(void) {
 }
 
 int main(int argc, char **argv) {
+    const char *filename = NULL;
+
     /* Check arity and parse additional args if any. */
     if (argc < 2) {
         showHelp();
         exit(0);
     }
 
-    if (argc > 2) {
-        int j;
-        for (j = 4; j < argc; j++) {
-            int moreargs = j+1 < argc;
+    int j;
+    for (j = 1; j < argc; j++) {
+        int moreargs = j+1 < argc;
 
-            if (!strcmp(argv[j],"--relief-height") && moreargs) {
-                OptReliefHeight = atof(argv[++j]);
-            } else if (!strcmp(argv[j],"--base-height") && moreargs) {
-                OptBaseHeight = atof(argv[++j]);
-            } else if (!strcmp(argv[j],"--levels") && moreargs) {
-                OptLevels = atoi(argv[++j]);
-                if (OptLevels < 2) OptLevels = 2;
-            } else if (!strcmp(argv[j],"--positive")) {
-                OptNegative = 0;
-            } else if (!strcmp(argv[j],"--negative")) {
-                OptNegative = 1;
-            } else if (!strcmp(argv[j],"--help")) {
-                showHelp();
-            } else {
-                fprintf(stderr,"Invalid options.");
-                showHelp();
-                exit(1);
-            }
+        if (!strcmp(argv[j],"--relief-height") && moreargs) {
+            OptReliefHeight = atof(argv[++j]);
+        } else if (!strcmp(argv[j],"--base-height") && moreargs) {
+            OptBaseHeight = atof(argv[++j]);
+        } else if (!strcmp(argv[j],"--levels") && moreargs) {
+            OptLevels = atoi(argv[++j]);
+            if (OptLevels < 2) OptLevels = 2;
+        } else if (!strcmp(argv[j],"--positive")) {
+            OptNegative = 0;
+        } else if (!strcmp(argv[j],"--negative")) {
+            OptNegative = 1;
+        } else if (!strcmp(argv[j],"--help")) {
+            showHelp();
+            exit(0);
+        } else if (argv[j][0] != '-' && filename == NULL) {
+            filename = argv[j];
+        } else {
+            fprintf(stderr,"Invalid options.");
+            showHelp();
+            exit(1);
         }
     }
 
-    pngtostl(argv[1]);
+    if (filename == NULL) {
+        printf("No PNG filename given\n");
+        exit(1);
+    }
+
+    pngtostl(filename);
     return 0;
 }
