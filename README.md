@@ -26,6 +26,8 @@ Compile with `make` (you need libpng). Then use like this:
 
     ./pngtostl image.png > model.stl
 
+Warning: use reltaively low resolution images, if the image is big resize it, otherwise the resulting STL file will be huge without any good reason. Most printers can't go over a given (small) resolution anyway. Do a first try with a very small image, like 300x300 pixels, then move to larger images as you want to print larger negatives.
+
 By default the generated model will use 1x1 millimeters per pixel, 20 "levels"
 (different heights) to generate 20 levels of grey, and will produce a model with
 total height of 1.2 millimeters: 0.2 millimeters base, 1 millimeter to reproduce
