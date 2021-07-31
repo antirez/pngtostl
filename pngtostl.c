@@ -187,7 +187,7 @@ void pngtostl(const char *filename) {
     int w, h;
     unsigned char *rgb = PngLoad(fp,&w,&h,NULL);
     if (rgb == NULL) {
-        printf("Error parsing the PNG file.\n");
+        fprintf(stderr,"Error parsing the PNG file.\n");
         exit(1);
     }
     fclose(fp);
@@ -219,7 +219,7 @@ void pngtostl(const char *filename) {
 
 /* Show help on wrong call or if --help is given. */
 void showHelp(void) {
-    printf("png2stl image.png [... options ...]\n"
+    fprintf(stderr,"png2stl image.png [... options ...]\n"
            "  --relief-height <mm> | Relief height.      Default: 1 mm\n"
            "  --base-height <mm>   | Fixed base height.  Default: .2 mm\n"
            "  --levels             | Number of different levels (heights/greys). Default: 20\n"
@@ -264,7 +264,7 @@ int main(int argc, char **argv) {
     }
 
     if (filename == NULL) {
-        printf("No PNG filename given\n");
+        fprintf(stderr,"No PNG filename given\n");
         exit(1);
     }
 
