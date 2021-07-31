@@ -204,7 +204,7 @@ void pngtostl(const char *filename) {
     /* Emit the STL file. */
     p = rgb;
     printf("solid PngToStl\n");
-    for (int y = 0; y < h; y++) {
+    for (int y = h-1; y >= 0; y--) {
         for (int x = 0; x < w; x++) {
             float lum = (float)(p[0]+p[1]+p[2])/3;
             int level = round((OptLevels-1)*lum/max);
